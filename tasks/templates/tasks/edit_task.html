@@ -1,0 +1,17 @@
+{% extends "tasks/base.html" %}
+{% block title %}Edit Task{% endblock %}
+{% block content %}
+<section class="app-card edit-card">
+    <div class="eyebrow">MAKE A CHANGE</div>
+    <h1>Edit task <span>✎</span></h1>
+    <p class="subtitle">Task ko update karo aur aage badho.</p>
+    <form method="post" class="edit-form">
+        {% csrf_token %}
+        <label for="{{ form.title.id_for_label }}">Task name</label>
+        {{ form.title }}
+        {% if form.title.errors %}<p class="error">{{ form.title.errors|striptags }}</p>{% endif %}
+        <button class="primary-btn" type="submit">Save changes</button>
+        <a class="cancel-link" href="{% url 'task_list' %}">Cancel and go back</a>
+    </form>
+</section>
+{% endblock %}

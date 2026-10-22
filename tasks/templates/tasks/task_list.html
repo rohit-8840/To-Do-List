@@ -1,0 +1,55 @@
+{% extends "tasks/base.html" %}
+{% block title %}My To-Do List{% endblock %}
+{% block content %}
+<section class="app-card">
+    <div class="eyebrow">YOUR PERSONAL SPACE</div>
+    <h1>My To-Do List <span>✦</span></h1>
+    <p class="subtitle">Chhote steps, badi progress.</p>
+
+    <div class="stats">
+        <div><strong>{{ remaining_count }}</strong><span>Remaining</span></div>
+        <div><strong>{{ completed_count }}</strong><span>Completed</span></div>
+        <div><strong>{{ tasks|length }}</strong><span>Total tasks</span></div>
+    </div>
+
+    <form method="post" class="add-form">
+        {% csrf_token %}
+        {{ form.title }}
+        <button type="submit" class="primary-btn">+ Add task</button>
+    </form>
+    {% if form.title.errors %}
+        <p class="error">{{ form.title.errors|striptags }}</p>
+    {% endif %}
+
+    <div class="list-heading">
+        <h2>Today's tasks</h2>
+        <span>{{ tasks|length }} item{{ tasks|length|pluralize }}</span>
+    </div>
+
+    {% for task in tasks %}
+        <article class="task-row {% if task.completed %}is-complete{% endif %}">
+            <form method="post" action="{% url 'toggle_task' task.id %}">
+                {% csrf_token %}
+                <button class="check-btn" type="submit" aria-label="Toggle task">
+                    {% if task.completed %}✓{% endif %}
+                </button>
+            </form>
+            <div class="task-copy">
+                <div class="task-title">{{ task.title }}</div>
+                <div class="task-status">{% if task.completed %}Completed{% else %}In progress{% endif %}</div>
+            </div>
+            <a class="icon-link" href="{% url 'edit_task' task.id %}" aria-label="Edit task" title="Edit">✎</a>
+            <form method="post" action="{% url 'delete_task' task.id %}" onsubmit="return confirm('Is task ko delete karna hai?');">
+                {% csrf_token %}
+                <button class="icon-btn delete-btn" type="submit" aria-label="Delete task" title="Delete">×</button>
+            </form>
+        </article>
+    {% empty %}
+        <div class="empty-state">
+            <div class="empty-icon">✧</div>
+            <h3>Abhi koi task nahi hai</h3>
+            <p>Upar apna pehla task add karke shuru karo!</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}
